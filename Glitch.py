@@ -4,11 +4,11 @@ import math, random, sys
 from PIL import Image
 from matplotlib.cbook import Null
 
-class ExtendedImage(Image):
+class ExtendedImage(object):
     
     #initalizes ExtendedObject as being an image
-    def __init__(self):
-        self = Image(self)
+    def __init__(self, img):
+        self._img = img
     
     #returns the image object
     def getSelf(self):
@@ -38,10 +38,27 @@ class ExtendedImage(Image):
             count += incrament
         self._img = blank 
     
-        
+    #returns image object
+    def getSelf(self):
+        return self._img
     
-        
+    #@override show method
+    def show(self):
+        return self._img.show
+    def color_rounding(self, amplitude=0):
+        width, height = self._img.size
+        blank = Image.new(self._img.mode, self._img.size, "white")
+        for y in range(height):
+            for x in range(width):
+                r,b,g = self._img.getpixel((x,y))
+                blank.putpixel((x, y), (round(r),round(b),round(g)))
+        self._img = blank
+
+    
         
 def factors(n):
     return list(sum([[i, n//i] for i in xrange(1, int(n**.5)+1) if not
          n%i], []))
+    
+def round(n):
+    return (0,255)[n>=128]
