@@ -4,6 +4,8 @@ import math, random, sys
 from PIL import Image
 from matplotlib.cbook import Null
 
+__all__ = ["getSelf", "vertical_chop", "horizontal_chop", "show", "color_rounding"]
+
 class ExtendedImage(object):
     
     #initalizes ExtendedObject as being an image
@@ -17,7 +19,7 @@ class ExtendedImage(object):
     #randomly chops image vertically and puts it back together
     def vertical_chop(self):
         blank = Image.new(self._img.mode, self._img.size, "white")
-        incrament = self._img.size[0]/random.choice(factors(self._img.size[0]))
+        incrament = self._img.size[0]/random.choice(__factors(self._img.size[0]))
         boxes = [(x, 0, x+incrament, self._img.size[1]) for x in range(0, self._img.size[0], incrament)]
         random.shuffle(boxes)
         count = 0
@@ -29,7 +31,7 @@ class ExtendedImage(object):
     #randomy chops image horizontally and puts it back together
     def horizontal_chop(self):
         blank = Image.new(self._img.mode, self._img.size, "white")
-        incrament = self._img.size[1]/random.choice(factors(self._img.size[1]))
+        incrament = self._img.size[1]/random.choice(__factors(self._img.size[1]))
         boxes = [(0, x, self._img.size[0], x+incrament) for x in range(0, self._img.size[1], incrament)]
         random.shuffle(boxes)
         count = 0
@@ -51,14 +53,14 @@ class ExtendedImage(object):
         for y in range(height):
             for x in range(width):
                 r,b,g = self._img.getpixel((x,y))
-                blank.putpixel((x, y), (round(r),round(b),round(g)))
+                blank.putpixel((x, y), (__round(r),__round(b),__round(g)))
         self._img = blank
 
     
         
-def factors(n):
+def __factors(n):
     return list(sum([[i, n//i] for i in xrange(1, int(n**.5)+1) if not
          n%i], []))
     
-def round(n):
+def __round(n):
     return (0,255)[n>=128]
