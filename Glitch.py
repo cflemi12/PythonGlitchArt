@@ -1,6 +1,6 @@
 #!/usr/bin/python
 """
-This is the Glitch module that utilizes a warpper class, ExtendedImage,
+This is the Glitch module that utilizes a wrapper class, ExtendedImage,
 for PIL's Image module. This module has multiple functions that are used
 solely for the purpose of manipulating the image in a glitch art like 
 fashion. 
@@ -12,7 +12,7 @@ import math, random
 from PIL import Image
 
 __all__ = ["getSelf", "vertical_chop", "horizontal_chop", "show", "save", "color_round", "color_cosine", "color_sine",
-           "color_tangent", "horizontal_wave", "vertical_wave", "y_reverse", "x_reverse", "randomize_color"]
+           "color_tangent", "horizontal_wave", "vertical_wave", "y_reverse", "x_reverse", "randomize_color", "shear"]
 
 class ExtendedImage(object):
     
@@ -148,7 +148,18 @@ class ExtendedImage(object):
             for y in range(self._img.size[1]):
                 r,g,b = self._img.getpixel((x,y))
                 self._img.putpixel((x,y), (r, random.randrange(1,255), random.randrange(1, 255)))
-        
+                
+    def shear(self, a):
+        """ Shears transforms the image by a degrees and mods the value by size of image. """
+        blank = Image.new(self._img.mode, self._img.size, "black")
+        width, height = self._img.size
+        for y in range(height):
+            for x in range(width):
+                xprime = int(x*math.cos(a) - y*math.sin(a))%width
+                yprime = int(x*math.sin(a) + y*math.cos(a))%height 
+                blank.putpixel((xprime,yprime), self._img.getpixel((x,y)))
+        self._img = blank
+               
 def _factors(n):
     """ Returns a list of factors of n. """
     return list(sum([[i, n//i] for i in xrange(1, int(n**.5)+1) if not
