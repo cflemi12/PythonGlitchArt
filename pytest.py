@@ -1,7 +1,8 @@
 #!/usr/bin/python
 from PIL import Image
 import Glitch, random
+from Glitch import ExtendedImage
 
-img = Glitch.ExtendedImage(Image.open("1.jpg"))
-img.shear(12)
-img.show()
+im = ExtendedImage(Image.open("5.jpg"))
+im.roll(.2)
+im.show()

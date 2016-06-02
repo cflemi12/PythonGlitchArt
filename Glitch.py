@@ -10,9 +10,9 @@ Date: 4/19/16
 
 import math, random
 from PIL import Image
+import numpy as np
 
-__all__ = ["getSelf", "vertical_chop", "horizontal_chop", "show", "save", "color_round", "color_cosine", "color_sine",
-           "color_tangent", "horizontal_wave", "vertical_wave", "y_reverse", "x_reverse", "randomize_color", "shear"]
+__all__ = ["getSelf", "vertical_chop", "horizontal_chop", "show", "save", "color_round", "color_cosine", "color_sine", "color_tangent", "horizontal_wave", "vertical_wave", "y_reverse", "x_reverse", "randomize_color", "shear", "log", "roll"]
 
 class ExtendedImage(object):
     
@@ -159,7 +159,31 @@ class ExtendedImage(object):
                 yprime = int(x*math.sin(a) + y*math.cos(a))%height 
                 blank.putpixel((xprime,yprime), self._img.getpixel((x,y)))
         self._img = blank
-               
+        
+    def log(self):
+        """ Takes the log of the pixel values. """
+        blank = Image.new(self._img.mode, self._img.size, "black")
+        width, height = self._img.size
+        for y in range(height):
+            for x in range(width):
+                r,b,g = self._img.getpixel((x,y))
+                logpix = _function(r,b,g)
+                blank.putpixel((x,y), logpix)
+        self._img = blank
+
+    def roll(self, ratio=1):
+        """ Uses numpy roll to distort rows of pixels. """
+        pixels = np.array(self._img)
+        width, height = self._img.size
+        columns = np.array_split(pixels, width, axis=1)
+        count = 0
+        for col in columns:
+           columns[count] = np.roll(col,int(ratio*(height)*math.cos(width*count)))
+           count = count + 1
+        total = np.concatenate(columns,axis=1)
+        total = Image.fromarray(total)
+        self._img = total
+
 def _factors(n):
     """ Returns a list of factors of n. """
     return list(sum([[i, n//i] for i in xrange(1, int(n**.5)+1) if not
@@ -168,3 +192,9 @@ def _factors(n):
 def _round(n):
     """ Rounds n in the range of 0 to 255. """
     return (0,255)[n>=128]
+
+def _function(a,b,c):
+    fa = a
+    fb = int(0.6*b)
+    fc = int(10*math.log(c+1))
+    return fa, fb, fc
